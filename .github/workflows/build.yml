@@ -10,22 +10,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Kodlarni yuklab olish
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Java 17 o'rnatish
-        uses: actions/setup-java@v4
+      - name: Set up Java 17
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Gradle ruxsatini berish va APK yig'ish
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build Debug APK
         working-directory: ./android
         run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug
+          if [ -f "./gradlew" ]; then
+            chmod +x gradlew
+            ./gradlew assembleDebug
+          else
+            gradle assembleDebug
+          fi
 
-      - name: Tayyor APK ni yuklash
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Mango-Monitor-v3.4-APK
